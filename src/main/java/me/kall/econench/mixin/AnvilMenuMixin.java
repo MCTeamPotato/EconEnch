@@ -46,7 +46,7 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
 
         for (Map.Entry<Enchantment, Integer> entry : rightEnch.entrySet()) {
             Enchantment enchantment = entry.getKey();
-            if (outputEnch.get(enchantment) <= 0) {
+            if (outputEnch.getOrDefault(enchantment, 0) <= 0) {
                 remaining.put(enchantment, entry.getValue());
                 hasRemaining = true;
             }
