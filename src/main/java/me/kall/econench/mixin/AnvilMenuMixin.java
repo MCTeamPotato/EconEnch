@@ -2,7 +2,6 @@ package me.kall.econench.mixin;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
@@ -10,7 +9,6 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.ItemCombinerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -36,7 +34,7 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
         ItemStack left = this.inputSlots.getItem(0);
         ItemStack right = this.inputSlots.getItem(1);
 
-        if (left.isEmpty() || right.isEmpty() || output.isEmpty() || !right.is(Items.ENCHANTED_BOOK)) return;
+        if (left.isEmpty() || right.isEmpty() || output.isEmpty()) return;
 
         ItemEnchantments rightEnch = EnchantmentHelper.getEnchantmentsForCrafting(right);
         if (rightEnch.isEmpty()) return;
@@ -57,7 +55,7 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
 
         if (hasRemaining) {
             ItemStack remainingBook = right.copy();
-            remainingBook.set(DataComponents.STORED_ENCHANTMENTS, remaining.toImmutable());
+            EnchantmentHelper.setEnchantments(remainingBook, remaining.toImmutable());
             this.econEnch$pendingRemainingBook = remainingBook;
         }
     }
