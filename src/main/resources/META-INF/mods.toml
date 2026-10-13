@@ -1,0 +1,14 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "econench"
+version = "${version}"
+displayName = "EconEnch"
+authors = "Kasualix"
+description = '''
+
+'''
+#logoFile = ""
