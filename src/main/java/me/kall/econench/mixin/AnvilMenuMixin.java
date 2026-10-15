@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
     }
 
     @Inject(method = "onTake", at = @At("HEAD"))
-    private void recordOnTake(Player player, ItemStack output, CallbackInfo ci) {
+    private void recordOnTake(Player player, ItemStack output, CallbackInfoReturnable<ItemStack> cir) {
         this.econEnch$pendingRemaining = ItemStack.EMPTY;
 
         ItemStack left = this.inputSlots.getItem(0);
@@ -60,7 +60,7 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
     }
 
     @Inject(method = "onTake", at = @At("TAIL"))
-    private void keepOnTake(CallbackInfo ci) {
+    private void keepOnTake(CallbackInfoReturnable<ItemStack> cir) {
         if (this.econEnch$pendingRemaining.isEmpty()) return;
 
         this.inputSlots.setItem(1, this.econEnch$pendingRemaining.copy());
