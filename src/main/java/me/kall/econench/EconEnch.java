@@ -1,6 +1,6 @@
 package me.kall.econench;
 
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.Mod;
 
 @Mod(EconEnch.MOD_ID)
 public final class EconEnch {
