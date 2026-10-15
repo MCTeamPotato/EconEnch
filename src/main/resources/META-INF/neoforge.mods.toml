@@ -1,0 +1,19 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+#issueTrackerURL = ""
+license = "MIT"
+
+[[mods]]
+modId = "econench"
+version = "${version}"
+displayName = "EconEnch"
+#logoFile = "logo.png"
+authors = "Kasualix"
+#credits = ""
+description = '''
+
+'''
+#logoFile = ""
+
+[[mixins]]
+config = "econench.mixins.json"
