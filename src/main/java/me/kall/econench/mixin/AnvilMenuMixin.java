@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AnvilMenu.class)
 public abstract class AnvilMenuMixin extends ItemCombinerMenu {
-    @Unique private ItemStack econEnch$pendingRemainingBook = ItemStack.EMPTY;
+    @Unique private ItemStack econEnch$pendingRemaining = ItemStack.EMPTY;
 
     public AnvilMenuMixin(@Nullable MenuType<?> type, int containerId, Inventory playerInventory, ContainerLevelAccess access) {
         super(type, containerId, playerInventory, access);
@@ -29,7 +29,7 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
 
     @Inject(method = "onTake", at = @At("HEAD"))
     private void recordOnTake(Player player, ItemStack output, CallbackInfo ci) {
-        this.econEnch$pendingRemainingBook = ItemStack.EMPTY;
+        this.econEnch$pendingRemaining = ItemStack.EMPTY;
 
         ItemStack left = this.inputSlots.getItem(0);
         ItemStack right = this.inputSlots.getItem(1);
@@ -41,30 +41,30 @@ public abstract class AnvilMenuMixin extends ItemCombinerMenu {
 
         ItemEnchantments outputEnch = EnchantmentHelper.getEnchantmentsForCrafting(output);
 
-        ItemEnchantments.Mutable remaining = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        ItemEnchantments.Mutable remainingEnch = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
         boolean hasRemaining = false;
 
         for (Object2IntMap.Entry<Holder<Enchantment>> entry : rightEnch.entrySet()) {
             Holder<Enchantment> enchantment = entry.getKey();
             if (outputEnch.getLevel(enchantment) <= 0) {
-                remaining.set(enchantment, entry.getIntValue());
+                remainingEnch.set(enchantment, entry.getIntValue());
                 hasRemaining = true;
             }
         }
 
         if (hasRemaining) {
-            ItemStack remainingBook = right.copy();
-            EnchantmentHelper.setEnchantments(remainingBook, remaining.toImmutable());
-            this.econEnch$pendingRemainingBook = remainingBook;
+            ItemStack remaining = right.copy();
+            EnchantmentHelper.setEnchantments(remaining, remainingEnch.toImmutable());
+            this.econEnch$pendingRemaining = remaining;
         }
     }
 
     @Inject(method = "onTake", at = @At("TAIL"))
     private void keepOnTake(CallbackInfo ci) {
-        if (this.econEnch$pendingRemainingBook.isEmpty()) return;
+        if (this.econEnch$pendingRemaining.isEmpty()) return;
 
-        this.inputSlots.setItem(1, this.econEnch$pendingRemainingBook.copy());
-        this.econEnch$pendingRemainingBook = ItemStack.EMPTY;
+        this.inputSlots.setItem(1, this.econEnch$pendingRemaining.copy());
+        this.econEnch$pendingRemaining = ItemStack.EMPTY;
         this.broadcastChanges();
     }
 }
