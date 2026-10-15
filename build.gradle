@@ -8,6 +8,8 @@ plugins {
 }
 
 boolean isNeo = loom.platform.get().displayName() == "NeoForge"
+boolean hasMixin = file("src/main/resources/${archives_name}.mixins.json").exists()
+boolean hasAT = file("src/main/resources/META-INF/accesstransformer.cfg").exists()
 
 group = maven_group
 version = minecraft_version + "-" + mod_version
@@ -21,7 +23,12 @@ loom {
 
     if (!isNeo) {
         forge {
-            it.mixinConfig("${archives_name}.mixins.json")
+            if (hasMixin) {
+                it.mixinConfig("${archives_name}.mixins.json")
+            } 
+            if (hasAT) {
+                it.accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
+            }
         }
     }
 }
@@ -34,8 +41,9 @@ repositories {
 }
 
 def versions = [
-        "1.20.1": [forge: "47.4.28", parchment: "2023.09.03"],
-        "1.21.1": [neo: "21.1.259",  parchment: "2024.11.17"]
+        "1.16.5": [forge: "36.2.42", parchment: "2022.03.06", java: 8],
+        "1.20.1": [forge: "47.4.28", parchment: "2023.09.03", java: 17],
+        "1.21.1": [neo: "21.1.259",  parchment: "2024.11.17", java: 21]
 ]
 
 def versionKeys = versions[minecraft_version]
@@ -95,12 +103,13 @@ processResources {
 java {
     withSourcesJar()
 
-    sourceCompatibility = isNeo ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
-    targetCompatibility = isNeo ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
+    JavaVersion javaVersion = JavaVersion.toVersion(versionKeys.java)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = isNeo ? 21 : 17
+    it.options.release = versionKeys.java
 }
 
 String changelog = file("CHANGELOG.md").getText("UTF-8")
@@ -117,7 +126,7 @@ tasks.register("publishCurseForge", TaskPublishCurseForge) {
         mainFile.changelogType = "markdown"
         mainFile.addEnvironment("Server", "Client")
         mainFile.addModLoader(isNeo ? "NeoForge" : "Forge")
-        mainFile.addJavaVersion(isNeo ? "Java 21" : "Java 17")
+        mainFile.addJavaVersion("Java ${versionKeys.java}")
         mainFile.addGameVersion(minecraft_version)
 
         UploadArtifact sourceFile = mainFile.withAdditionalFile(sourcesJar)
